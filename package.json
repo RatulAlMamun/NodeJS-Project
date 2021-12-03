@@ -1,0 +1,20 @@
+{
+  "name": "raw-node-js",
+  "version": "1.0.0",
+  "description": "Raw Node JS with REST APIs",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RatulAlMamun/NodeJS-Project.git"
+  },
+  "author": "Md Abdullah Al Mamun (Ratul)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/RatulAlMamun/NodeJS-Project/issues"
+  },
+  "homepage": "https://github.com/RatulAlMamun/NodeJS-Project#readme"
+}
