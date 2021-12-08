@@ -13,7 +13,7 @@ const {handleReqRes} = require('./helpers/handleReqRes')
 // application scaffolding
 const app = {};
 
-// configaration settings
+// configuration settings
 app.config = {
     port: 3000
 };
