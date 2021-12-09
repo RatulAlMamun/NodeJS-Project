@@ -32,14 +32,6 @@ handler.handleReqRes = (req, res) => {
 
     // Choose URL handle to execute
     const chooseHandler = routes[path] ? routes[path] : notFoundHandler;
-    chooseHandler(requestProperties, (statusCode, payload) => {
-        statusCode = typeof statusCode === 'number' ? statusCode : 500;
-        payload = typeof payload === 'object' ? payload : {};
-        payloadString = JSON.stringify(payload);
-        // Final Response set
-        res.writeHead(statusCode);
-        res.end(payloadString);
-    });
     
     // request payload
     const decoder = new StringDecoder('utf-8');
@@ -49,6 +41,16 @@ handler.handleReqRes = (req, res) => {
     });
     req.on('end', (buffer) => {
         realData += decoder.end(buffer);
+
+        // Run the chooseHandler function
+        chooseHandler(requestProperties, (statusCode, payload) => {
+            statusCode = typeof statusCode === 'number' ? statusCode : 500;
+            payload = typeof payload === 'object' ? payload : {};
+            payloadString = JSON.stringify(payload);
+            // Final Response set
+            res.writeHead(statusCode);
+            res.end(payloadString);
+        });
     });
 };
 
