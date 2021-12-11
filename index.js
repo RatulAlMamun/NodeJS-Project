@@ -17,8 +17,12 @@ const data = require('./lib/data');
 //     console.log('error: ', err);
 // });
 
-data.read('test', 'newFile', (err, data) => {
-    console.log(err, data);
+// data.read('test', 'newFile', (err, data) => {
+//     console.log(err, data);
+// });
+
+data.update('test', 'newFile', {'name': 'England', 'Langugae': 'English'}, (err) => {
+    console.log('error: ', err);
 });
 
 // application scaffolding
