@@ -21,7 +21,11 @@ const data = require('./lib/data');
 //     console.log(err, data);
 // });
 
-data.update('test', 'newFile', {'name': 'England', 'Langugae': 'English'}, (err) => {
+// data.update('test', 'newFile', {'name': 'England', 'Langugae': 'English'}, (err) => {
+//     console.log('error: ', err);
+// });
+
+data.delete('test', 'newFile', (err) => {
     console.log('error: ', err);
 });
 
