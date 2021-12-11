@@ -12,13 +12,15 @@ const environments = {};
 // staging environment
 environments.staging = {
     port: 3000,
-    envName: 'staging'
+    envName: 'staging',
+    secretKey: '38fh3gnn3pdkKdf03'
 };
 
 // production environment
 environments.production = {
     port: 5000,
-    envName: 'production'
+    envName: 'production',
+    secretKey: '9j3jv0jdflKDJf0wkjf'
 };
 
 // Choose the current environment based on run command

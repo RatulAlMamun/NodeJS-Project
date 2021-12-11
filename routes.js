@@ -7,11 +7,13 @@
  */
 
 // dependencies
-const {testHandler} = require('./handlers/routeHandlers/testHandler');
+const { testHandler } = require('./handlers/routeHandlers/testHandler');
+const { userHandler } = require('./handlers/routeHandlers/userHandler');
 
 // routes definition 
 const routes = {
-    test: testHandler
+    test: testHandler,
+    user: userHandler
 };
 
 // module exports

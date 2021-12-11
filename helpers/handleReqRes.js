@@ -9,7 +9,8 @@
 // dependencies
 const url = require('url');
 const routes = require('../routes');
-const {StringDecoder} = require('string_decoder');
+const { StringDecoder } = require('string_decoder');
+const { parseJSON } = require('../helpers/utilities');
 const { notFoundHandler } = require('../handlers/routeHandlers/notFoundHandler');
 
 // application scaffolding
@@ -41,6 +42,7 @@ handler.handleReqRes = (req, res) => {
     });
     req.on('end', (buffer) => {
         realData += decoder.end(buffer);
+        requestProperties.body = parseJSON(realData);
 
         // Run the chooseHandler function
         chooseHandler(requestProperties, (statusCode, payload) => {
