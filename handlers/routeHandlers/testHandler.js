@@ -11,7 +11,6 @@ const handler = {};
 
 // handler function
 handler.testHandler = (requestProperties, callback) => {
-    console.log(requestProperties);
     callback(200, {
         error: false,
         message: "this is a test message."

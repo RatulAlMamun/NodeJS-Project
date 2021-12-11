@@ -47,7 +47,9 @@ handler.handleReqRes = (req, res) => {
             statusCode = typeof statusCode === 'number' ? statusCode : 500;
             payload = typeof payload === 'object' ? payload : {};
             payloadString = JSON.stringify(payload);
+
             // Final Response set
+            res.setHeader('Content-type', 'application/json');
             res.writeHead(statusCode);
             res.end(payloadString);
         });

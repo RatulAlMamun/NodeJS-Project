@@ -8,26 +8,8 @@
 
 // dependencies
 const http = require('http');
-const {handleReqRes} = require('./helpers/handleReqRes')
 const environment = require('./helpers/environments');
-const data = require('./lib/data');
-
-// testing file system
-// data.create('test', 'newFile', {'name': 'Bangladesh', 'Langugae': 'Bangla'}, (err) => {
-//     console.log('error: ', err);
-// });
-
-// data.read('test', 'newFile', (err, data) => {
-//     console.log(err, data);
-// });
-
-// data.update('test', 'newFile', {'name': 'England', 'Langugae': 'English'}, (err) => {
-//     console.log('error: ', err);
-// });
-
-data.delete('test', 'newFile', (err) => {
-    console.log('error: ', err);
-});
+const {handleReqRes} = require('./helpers/handleReqRes')
 
 // application scaffolding
 const app = {};
