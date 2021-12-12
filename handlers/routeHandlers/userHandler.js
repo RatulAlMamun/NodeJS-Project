@@ -8,7 +8,7 @@
 
 // dependencies
 const data = require('../../lib/data');
-const { hash } = require('../../helpers/utilities');
+const { hash, parseJSON } = require('../../helpers/utilities');
 
 // module scaffolding
 const handler = {};
@@ -26,7 +26,31 @@ handler.userHandler = (requestProperties, callback) => {
 handler._users = {};
 
 handler._users.get = (requestProperties, callback) => {
-    callback(200);
+    // check the phone no is valid
+    const phone = 
+        typeof(requestProperties.queryString.phone) === 'string' &&
+        requestProperties.queryString.phone.trim().length === 11 
+        ? requestProperties.queryString.phone 
+        : null;
+    
+    if (phone) {
+        // lookup the user
+        data.read('users', phone, (err, u) => {
+            const user = { ...parseJSON(u) };
+            if (!err && user) {
+                delete user.password;
+                callback(200, user);
+            } else {
+                callback(404, {
+                    error: 'Requested user not found!'
+                });
+            }
+        });
+    } else {
+        callback(404, {
+            error: 'Requested user not found!'
+        });
+    }
 };
 handler._users.post = (requestProperties, callback) => {
     const firstName = 
@@ -95,8 +119,109 @@ handler._users.post = (requestProperties, callback) => {
         });
     }
 };
-handler._users.put = (requestProperties, callback) => {};
-handler._users.delete = (requestProperties, callback) => {};
+handler._users.put = (requestProperties, callback) => {
+    const firstName = 
+        typeof(requestProperties.body.firstName) === 'string' &&
+        requestProperties.body.firstName.trim().length > 0 
+        ? requestProperties.body.firstName 
+        : null;
+
+    const lastName = 
+        typeof(requestProperties.body.lastName) === 'string' &&
+        requestProperties.body.lastName.trim().length > 0 
+        ? requestProperties.body.lastName 
+        : null;
+
+    const phone = 
+        typeof(requestProperties.body.phone) === 'string' &&
+        requestProperties.body.phone.trim().length === 11 
+        ? requestProperties.body.phone 
+        : null;
+
+    const password = 
+        typeof(requestProperties.body.password) === 'string' &&
+        requestProperties.body.password.trim().length > 0 
+        ? requestProperties.body.password 
+        : null;
+    
+    if (phone) {
+        if (firstName || lastName || password) {
+            data.read('users', phone, (err, userData) => {
+                const user = { ...parseJSON(userData) }
+                if (!err && user) {
+                    if (firstName) {
+                        user.firstName = firstName;
+                    }
+                    if (lastName) {
+                        user.lastName = lastName;
+                    }
+                    if (password) {
+                        user.password = hash(password);
+                    }
+                    data.update('users', phone, user, (err) => {
+                        if (!err) {
+                            callback(200, {
+                                message: 'User updated successfully.'
+                            })
+                        } else {
+                            callback(500, {
+                                error: 'Server Error'
+                            });
+                        }
+                    });
+                } else {
+                    callback(400, {
+                        error: 'You have a problem in your payload.'
+                    });
+                }
+            });
+        } else {
+            callback(400, {
+                error: 'You have a problem in your payload.'
+            });
+        }
+    } else {
+        callback(400, {
+            error: 'Invalid phone no. Please try again.'
+        });
+    }
+};
+handler._users.delete = (requestProperties, callback) => {
+    // check the phone no is valid
+    const phone = 
+        typeof(requestProperties.queryString.phone) === 'string' &&
+        requestProperties.queryString.phone.trim().length === 11 
+        ? requestProperties.queryString.phone 
+        : null;
+    
+    if (phone) {
+        // lookup the user
+        data.read('users', phone, (err1, u) => {
+            const user = { ...parseJSON(u) };
+            if (!err1 && user) {
+                data.delete('users', phone, (err2) => {
+                    if (!err2) {
+                        callback(200, {
+                            message: 'User deleted successfully'
+                        });
+                    } else {
+                        callback(500, {
+                            message: 'Server Error'
+                        });
+                    }
+                });
+            } else {
+                callback(404, {
+                    error: 'Requested user not found!'
+                });
+            }
+        });
+    } else {
+        callback(404, {
+            error: 'Requested user not found!'
+        });
+    }
+};
 
 // module export
 module.exports = handler;
