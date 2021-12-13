@@ -16,6 +16,7 @@ const handler = {};
 // handler function
 handler.userHandler = (requestProperties, callback) => {
     const acceptedMethods = ['get', 'post', 'put', 'delete'];
+    // accepted Methods checking
     if (acceptedMethods.indexOf(requestProperties.method) > -1) {
         handler._users[requestProperties.method](requestProperties, callback);
     } else {
@@ -23,16 +24,18 @@ handler.userHandler = (requestProperties, callback) => {
     }
 }
 
+// requested methods scaffolding
 handler._users = {};
 
+// get method handler - get user data with query string of phone
 handler._users.get = (requestProperties, callback) => {
-    // check the phone no is valid
+    // phone validation
     const phone = 
         typeof(requestProperties.queryString.phone) === 'string' &&
         requestProperties.queryString.phone.trim().length === 11 
         ? requestProperties.queryString.phone 
         : null;
-    
+    // check the phone is valid or not
     if (phone) {
         // lookup the user
         data.read('users', phone, (err, u) => {
@@ -52,7 +55,10 @@ handler._users.get = (requestProperties, callback) => {
         });
     }
 };
+
+// post method handler - user create
 handler._users.post = (requestProperties, callback) => {
+    // requested payload senitizing
     const firstName = 
         typeof(requestProperties.body.firstName) === 'string' &&
         requestProperties.body.firstName.trim().length > 0 
@@ -83,10 +89,12 @@ handler._users.post = (requestProperties, callback) => {
         ? requestProperties.body.tossAggrement 
         : null;
 
+    // rquired validation for all
     if (firstName && lastName && phone && password && tossAggrement) {
         // make sure that user does not already exist
         data.read('users', phone, (err1, user) => {
             if (err1) {
+                // creating userObject for storing
                 let userObject = {
                     firstName,
                     lastName,
@@ -119,7 +127,10 @@ handler._users.post = (requestProperties, callback) => {
         });
     }
 };
+
+// put method handler - user update
 handler._users.put = (requestProperties, callback) => {
+    // requeste payload senitizing
     const firstName = 
         typeof(requestProperties.body.firstName) === 'string' &&
         requestProperties.body.firstName.trim().length > 0 
@@ -144,8 +155,11 @@ handler._users.put = (requestProperties, callback) => {
         ? requestProperties.body.password 
         : null;
     
+    // phone validation checking
     if (phone) {
+        // check whether any updated data is passed
         if (firstName || lastName || password) {
+            // check if user exists
             data.read('users', phone, (err, userData) => {
                 const user = { ...parseJSON(userData) }
                 if (!err && user) {
@@ -158,6 +172,7 @@ handler._users.put = (requestProperties, callback) => {
                     if (password) {
                         user.password = hash(password);
                     }
+                    // update data with payload
                     data.update('users', phone, user, (err) => {
                         if (!err) {
                             callback(200, {
@@ -186,6 +201,8 @@ handler._users.put = (requestProperties, callback) => {
         });
     }
 };
+
+// delete method - delete existing data
 handler._users.delete = (requestProperties, callback) => {
     // check the phone no is valid
     const phone = 

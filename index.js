@@ -9,7 +9,7 @@
 // dependencies
 const http = require('http');
 const environment = require('./helpers/environments');
-const {handleReqRes} = require('./helpers/handleReqRes')
+const { handleReqRes } = require('./helpers/handleReqRes')
 
 // application scaffolding
 const app = {};
