@@ -11,7 +11,6 @@ const handler = {};
 
 // handler function
 handler.notFoundHandler = (requestProperties, callback) => {
-    console.log(requestProperties);
     callback(404, {
         error: true,
         message: "Not Found!"

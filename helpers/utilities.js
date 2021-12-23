@@ -37,5 +37,22 @@ utilities.hash = (str) => {
     }
 };
 
+// create a random string
+utilities.createRandomString = (strLength) => {
+    // parameter validation
+    const length = typeof(strLength) === 'number' ? strLength : false;
+    if (length) {
+        // generating token
+        const possibleCharacter = "abcdefgfijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        let output = '';
+        for (i = 0; i < length; i++) {
+        output += possibleCharacter.charAt(Math.floor(Math.random() * possibleCharacter.length))
+        }
+        return output;
+    } else {
+        return false;
+    }
+};
+
 // exports module
 module.exports = utilities;
