@@ -58,7 +58,7 @@ handler._users.get = (requestProperties, callback) => {
 
 // post method handler - user create
 handler._users.post = (requestProperties, callback) => {
-    // requested payload senitizing
+    // requested payload sanitizing
     const firstName = 
         typeof(requestProperties.body.firstName) === 'string' &&
         requestProperties.body.firstName.trim().length > 0 
@@ -83,14 +83,14 @@ handler._users.post = (requestProperties, callback) => {
         ? requestProperties.body.password 
         : null;
 
-    const tossAggrement = 
-        typeof(requestProperties.body.tossAggrement) === 'boolean' &&
-        requestProperties.body.tossAggrement
-        ? requestProperties.body.tossAggrement 
+    const tossAgreement = 
+        typeof(requestProperties.body.tossAgreement) === 'boolean' &&
+        requestProperties.body.tossAgreement
+        ? requestProperties.body.tossAgreement 
         : null;
 
-    // rquired validation for all
-    if (firstName && lastName && phone && password && tossAggrement) {
+    // required validation for all
+    if (firstName && lastName && phone && password && tossAgreement) {
         // make sure that user does not already exist
         data.read('users', phone, (err1, user) => {
             if (err1) {
@@ -100,7 +100,7 @@ handler._users.post = (requestProperties, callback) => {
                     lastName,
                     phone,
                     password: hash(password),
-                    tossAggrement
+                    tossAgreement: tossAgreement
                 };
 
                 // store the user to database
@@ -130,7 +130,7 @@ handler._users.post = (requestProperties, callback) => {
 
 // put method handler - user update
 handler._users.put = (requestProperties, callback) => {
-    // requeste payload senitizing
+    // request payload sanitizing
     const firstName = 
         typeof(requestProperties.body.firstName) === 'string' &&
         requestProperties.body.firstName.trim().length > 0 
