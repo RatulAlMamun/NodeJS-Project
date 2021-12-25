@@ -109,7 +109,58 @@ handler._tokens.post = (requestProperties, callback) => {
         });
     }
 };
-handler._tokens.put = (requestProperties, callback) => {};
+
+// put method handler - update the token expires time for 1hr
+handler._tokens.put = (requestProperties, callback) => {
+    // request payload sanitizing
+    const tokenId = 
+        typeof(requestProperties.body.tokenId) === 'string' &&
+        requestProperties.body.tokenId.trim().length === 200 
+        ? requestProperties.body.tokenId 
+        : null;
+
+    const extend = 
+        typeof(requestProperties.body.extend) === 'boolean' &&
+        requestProperties.body.extend 
+        ? true
+        : false;
+        
+        // validate request payload
+        if (tokenId && extend) {
+            // lookup for the token data
+            data.read('tokens', tokenId, (err1, tokenData) => {
+                if (!err1) {
+                    let tokenObject = parseJSON(tokenData);
+                    // check token expiration time
+                    if (tokenObject.expires > Date.now()) {
+                        // update the token expires time to 1hr
+                        tokenObject.expires = Date.now() + 60 * 60 * 1000;
+                        data.update('tokens', tokenId, tokenObject, (err2) => {
+                            if (!err2) {
+                                callback(200, tokenObject);
+                            } else {
+                                callback(500, {
+                                    error: "Server error!"
+                                });
+                            }
+                        });
+                    } else {
+                        callback(403, {
+                            error: "Token is expired!"
+                        });
+                    }
+                } else {
+                    callback(500, {
+                        error: "Server Error!"
+                    });
+                }
+            });
+        } else {
+            callback(400, {
+                error: "Requested payload is not valid!"
+            })
+        }
+};
 handler._tokens.delete = (requestProperties, callback) => {};
 
 // module export
