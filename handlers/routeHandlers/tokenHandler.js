@@ -26,7 +26,33 @@ handler.tokenHandler = (requestProperties, callback) => {
 // requested methods scaffolding
 handler._tokens = {};
 
-handler._tokens.get = (requestProperties, callback) => {};
+// get method handler - get token using token id
+handler._tokens.get = (requestProperties, callback) => {
+    // token id validation
+    const tokenId = 
+        typeof(requestProperties.queryString.id) === 'string' &&
+        requestProperties.queryString.id.trim().length === 200 
+        ? requestProperties.queryString.id 
+        : null;
+    // check the token id is valid or not
+    if (tokenId) {
+        // lookup the token
+        data.read('tokens', tokenId, (err, tokenData) => {
+            const token = { ...parseJSON(tokenData) };
+            if (!err && token) {
+                callback(200, token);
+            } else {
+                callback(404, {
+                    error: 'Requested token not found!'
+                });
+            }
+        });
+    } else {
+        callback(404, {
+            error: 'Requested token not found!'
+        });
+    }
+};
 
 // post method handler - token create with expire date
 handler._tokens.post = (requestProperties, callback) => {
