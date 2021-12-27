@@ -161,7 +161,46 @@ handler._tokens.put = (requestProperties, callback) => {
             })
         }
 };
-handler._tokens.delete = (requestProperties, callback) => {};
+
+// delete method handler - delete existing token
+handler._tokens.delete = (requestProperties, callback) => {
+    // check the phone no is valid
+    const tokenId = 
+        typeof(requestProperties.queryString.tokenId) === 'string' &&
+        requestProperties.queryString.tokenId.trim().length === 200 
+        ? requestProperties.queryString.tokenId 
+        : null;
+
+    // validate token 
+    if (tokenId) {
+        // lookup the token
+        data.read('tokens', tokenId, (err1, tokenData) => {
+            const tokenObject = { ...parseJSON(tokenData) };
+            if (!err1 && tokenObject) {
+                // delete existing token
+                data.delete('tokens', tokenId, (err2) => {
+                    if (!err2) {
+                        callback(200, {
+                            message: 'Token deleted successfully'
+                        });
+                    } else {
+                        callback(500, {
+                            message: 'Server Error'
+                        });
+                    }
+                });
+            } else {
+                callback(404, {
+                    error: 'Requested token not found!'
+                });
+            }
+        });
+    } else {
+        callback(404, {
+            error: 'There was a problem in payload!'
+        });
+    }
+};
 
 // module export
 module.exports = handler;
