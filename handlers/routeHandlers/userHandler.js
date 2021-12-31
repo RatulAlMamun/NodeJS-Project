@@ -8,6 +8,7 @@
 
 // dependencies
 const data = require('../../lib/data');
+const tokenHandler = require('./tokenHandler');
 const { hash, parseJSON } = require('../../helpers/utilities');
 
 // module scaffolding
@@ -37,15 +38,28 @@ handler._users.get = (requestProperties, callback) => {
         : null;
     // check the phone is valid or not
     if (phone) {
-        // lookup the user
-        data.read('users', phone, (err, u) => {
-            const user = { ...parseJSON(u) };
-            if (!err && user) {
-                delete user.password;
-                callback(200, user);
+        // verify token
+        const token = 
+            typeof(requestProperties.headersObject.token) === 'string' 
+            ? requestProperties.headersObject.token 
+            : false;
+        tokenHandler._tokens.verify(token, phone, (tokenId) => {
+            if (tokenId) {
+                // lookup the user
+                data.read('users', phone, (err, u) => {
+                    const user = { ...parseJSON(u) };
+                    if (!err && user) {
+                        delete user.password;
+                        callback(200, user);
+                    } else {
+                        callback(404, {
+                            error: 'Requested user not found!'
+                        });
+                    }
+                });
             } else {
-                callback(404, {
-                    error: 'Requested user not found!'
+                callback(403, {
+                    error: "Unauthorized!"
                 });
             }
         });
@@ -159,34 +173,47 @@ handler._users.put = (requestProperties, callback) => {
     if (phone) {
         // check whether any updated data is passed
         if (firstName || lastName || password) {
-            // check if user exists
-            data.read('users', phone, (err, userData) => {
-                const user = { ...parseJSON(userData) }
-                if (!err && user) {
-                    if (firstName) {
-                        user.firstName = firstName;
-                    }
-                    if (lastName) {
-                        user.lastName = lastName;
-                    }
-                    if (password) {
-                        user.password = hash(password);
-                    }
-                    // update data with payload
-                    data.update('users', phone, user, (err) => {
-                        if (!err) {
-                            callback(200, {
-                                message: 'User updated successfully.'
-                            })
+            // verify token
+            const token = 
+                typeof(requestProperties.headersObject.token) === 'string' 
+                ? requestProperties.headersObject.token 
+                : false;
+            tokenHandler._tokens.verify(token, phone, (tokenId) => {
+                if (tokenId) {
+                    // check if user exists
+                    data.read('users', phone, (err, userData) => {
+                        const user = { ...parseJSON(userData) }
+                        if (!err && user) {
+                            if (firstName) {
+                                user.firstName = firstName;
+                            }
+                            if (lastName) {
+                                user.lastName = lastName;
+                            }
+                            if (password) {
+                                user.password = hash(password);
+                            }
+                            // update data with payload
+                            data.update('users', phone, user, (err) => {
+                                if (!err) {
+                                    callback(200, {
+                                        message: 'User updated successfully.'
+                                    })
+                                } else {
+                                    callback(500, {
+                                        error: 'Server Error'
+                                    });
+                                }
+                            });
                         } else {
-                            callback(500, {
-                                error: 'Server Error'
+                            callback(400, {
+                                error: 'You have a problem in your payload.'
                             });
                         }
                     });
                 } else {
-                    callback(400, {
-                        error: 'You have a problem in your payload.'
+                    callback(403, {
+                        error: "Unauthorized!"
                     });
                 }
             });
@@ -212,24 +239,37 @@ handler._users.delete = (requestProperties, callback) => {
         : null;
     
     if (phone) {
-        // lookup the user
-        data.read('users', phone, (err1, u) => {
-            const user = { ...parseJSON(u) };
-            if (!err1 && user) {
-                data.delete('users', phone, (err2) => {
-                    if (!err2) {
-                        callback(200, {
-                            message: 'User deleted successfully'
+        // verify token
+        const token = 
+            typeof(requestProperties.headersObject.token) === 'string' 
+            ? requestProperties.headersObject.token 
+            : false;
+        tokenHandler._tokens.verify(token, phone, (tokenId) => {
+            if (tokenId) {
+                // lookup the user
+                data.read('users', phone, (err1, u) => {
+                    const user = { ...parseJSON(u) };
+                    if (!err1 && user) {
+                        data.delete('users', phone, (err2) => {
+                            if (!err2) {
+                                callback(200, {
+                                    message: 'User deleted successfully'
+                                });
+                            } else {
+                                callback(500, {
+                                    message: 'Server Error'
+                                });
+                            }
                         });
                     } else {
-                        callback(500, {
-                            message: 'Server Error'
+                        callback(404, {
+                            error: 'Requested user not found!'
                         });
                     }
                 });
             } else {
-                callback(404, {
-                    error: 'Requested user not found!'
+                callback(403, {
+                    error: "Unauthorized!"
                 });
             }
         });
