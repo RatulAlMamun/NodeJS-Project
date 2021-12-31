@@ -202,5 +202,22 @@ handler._tokens.delete = (requestProperties, callback) => {
     }
 };
 
+// Token verification function - general purpose function
+handler._tokens.verify = (tokenId, phone, callback) => {
+    // read the token data
+    data.read('tokens', tokenId, (err, tokenData) => {
+        if (!err) {
+            const tokenObject = parseJSON(tokenData);
+            if (tokenObject.phone === phone && tokenObject.expires > Date.now()) {
+                callback(true);
+            } else {
+                callback(false);
+            }
+        } else {
+            callback(false);
+        }
+    });
+};
+
 // module export
 module.exports = handler;
