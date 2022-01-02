@@ -318,7 +318,101 @@ handler._check.put = (requestProperties, callback) => {
 };
 
 // delete method - delete existing data
-handler._check.delete = (requestProperties, callback) => {};
+handler._check.delete = (requestProperties, callback) => {
+    // validation rules for query string
+    const id = 
+        typeof(requestProperties.queryString.id) === 'string' &&
+        requestProperties.queryString.id.trim().length === 20 
+        ? requestProperties.queryString.id 
+        : null;
+    
+    // validate query string
+    if (id) {
+        // fetch the check data from database
+        data.read('checks', id, (err1, checkData) => {
+            if (!err1 && checkData) {
+                const checkObject = parseJSON(checkData);
+                // get the token from request header
+                const token = 
+                    typeof(requestProperties.headersObject.token) === 'string' 
+                    ? requestProperties.headersObject.token 
+                    : false;
+
+                // verify token
+                tokenHandler._tokens.verify(token, checkObject.userPhone, (tokenIsValid) => {
+                    if (tokenIsValid) {
+                        // delete check data from database
+                        data.delete('checks', id, (err2) => {
+                            if (!err2) {
+                                // fetch user data to delete check id
+                                data.read('users', checkObject.userPhone, (err3, userData) => {
+                                    if (!err3 && userData) {
+                                        const userObject = parseJSON(userData);
+                                        // userCheck data sanitizing
+                                        let userChecks = 
+                                            typeof(userObject.checks) === 'object' &&
+                                            userObject.checks instanceof Array
+                                            ? userObject.checks
+                                            : [];
+                                        
+                                        // remove the deleted check id from userChecks
+                                        const checkPosition = userObject.checks.indexOf(id);
+                                        if (checkPosition > -1) {
+                                            userChecks.splice(checkPosition, 1);
+                                            
+                                            // update the user data
+                                            userObject.checks = userChecks;
+                                            data.update(
+                                                'users',
+                                                userObject.phone,
+                                                userObject,
+                                                (err4) => {
+                                                    if (!err4) {
+                                                        callback(200, {
+                                                            message: "Successfully deleted."
+                                                        })
+                                                    } else {
+                                                        callback(500, {
+                                                            error: "Server Error!"
+                                                        });
+                                                    }
+                                                }
+                                            );
+                                        } else {
+                                            callback(500, {
+                                                error: "Check id is not found in user data!"
+                                            });
+                                        }
+                                    } else {
+                                        callback(500, {
+                                            error: "Server Error!"
+                                        });
+                                    }
+                                });
+                            } else {
+                                callback(500, {
+                                    error: "Server Error!"
+                                });
+                            }
+                        });
+                    } else {
+                        callback(403, {
+                            error: "Unauthorized!"
+                        });
+                    }
+                });
+            } else {
+                callback(404, {
+                    error: "Check data not found."
+                });
+            }
+        });
+    } else {
+        callback(400, {
+            error: "You have a problem in your request."
+        });
+    }
+};
 
 // module export
 module.exports = handler;
