@@ -206,7 +206,116 @@ handler._check.post = (requestProperties, callback) => {
 };
 
 // put method handler - user update
-handler._check.put = (requestProperties, callback) => {};
+handler._check.put = (requestProperties, callback) => {
+    // validation rules for query string
+    const id = 
+        typeof(requestProperties.queryString.id) === 'string' &&
+        requestProperties.queryString.id.trim().length === 20 
+        ? requestProperties.queryString.id 
+        : null;
+    
+    // validate query string
+    if (id) {
+        // validation rules
+        const protocol =
+            typeof(requestProperties.body.protocol) === 'string' &&
+            ['http', 'https'].indexOf(requestProperties.body.protocol) > -1
+            ? requestProperties.body.protocol
+            : false;
+
+        const url =
+            typeof(requestProperties.body.url) === 'string' &&
+            requestProperties.body.url.trim().length > 0
+            ? requestProperties.body.url
+            : false;
+
+        const method =
+            typeof(requestProperties.body.method) === 'string' &&
+            ['GET', 'POST', 'PUT', 'DELETE'].indexOf(requestProperties.body.method) > -1
+            ? requestProperties.body.method
+            : false;
+
+        const successCodes =
+            typeof(requestProperties.body.successCodes) === 'object' &&
+            requestProperties.body.successCodes instanceof Array
+            ? requestProperties.body.successCodes
+            : false;
+
+        const timeoutSeconds =
+            typeof(requestProperties.body.timeoutSeconds) === 'number' &&
+            requestProperties.body.timeoutSeconds % 1 === 0 &&
+            requestProperties.body.timeoutSeconds >= 1 &&
+            requestProperties.body.timeoutSeconds <= 5
+            ? requestProperties.body.timeoutSeconds
+            : false;
+
+        // validate request payload
+        if (protocol || url || method || successCodes || timeoutSeconds) {
+            // fetch the check data
+            data.read('checks', id, (err1, checkData) => {
+                if (!err1 && checkData) {
+                    const checkObject = parseJSON(checkData);
+                
+                    // get the token from request header
+                    const token = 
+                        typeof(requestProperties.headersObject.token) === 'string' 
+                        ? requestProperties.headersObject.token 
+                        : false;
+
+                    // verify token
+                    tokenHandler._tokens.verify(token, checkObject.userPhone, (tokenIsValid) => {
+                        if (tokenIsValid) {
+                            if (protocol) {
+                                checkObject.protocol = protocol;
+                            }
+                            if (url) {
+                                checkObject.url = url;
+                            }
+                            if (method) {
+                                checkObject.method = method;
+                            }
+                            if (successCodes) {
+                                checkObject.successCodes = successCodes;
+                            }
+                            if (timeoutSeconds) {
+                                checkObject.timeoutSeconds = timeoutSeconds;
+                            }
+
+                            // update the check data
+                            data.update('checks', id, checkObject, (err2) => {
+                                if (!err2) {
+                                    callback(200, {
+                                        message: "Check Data updated successfully."
+                                    });
+                                } else {
+                                    callback(500, {
+                                        error: "Server Error!"
+                                    });
+                                }
+                            });
+                        } else {
+                            callback(403, {
+                                error: "Unauthorized!"
+                            });
+                        }
+                    });
+                } else {
+                    callback(500, {
+                        error: 'Server Error!'
+                    });
+                }
+            });
+        } else {
+            callback(400, {
+                error: 'You must provide at least one data to update!'
+            });
+        }
+    } else {
+        callback(400, {
+            error: 'You have a problem in your payload!'
+        });
+    }
+};
 
 // delete method - delete existing data
 handler._check.delete = (requestProperties, callback) => {};
