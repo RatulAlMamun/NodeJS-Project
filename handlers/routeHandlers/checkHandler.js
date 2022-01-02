@@ -30,7 +30,51 @@ handler.checkHandler = (requestProperties, callback) => {
 handler._check = {};
 
 // get method handler - get user data with query string of phone
-handler._check.get = (requestProperties, callback) => {};
+handler._check.get = (requestProperties, callback) => {
+    // validation rules for query string
+    const id = 
+        typeof(requestProperties.queryString.id) === 'string' &&
+        requestProperties.queryString.id.trim().length === 20 
+        ? requestProperties.queryString.id 
+        : null;
+    
+    // validate query string
+    if (id) {
+        // fetch the check data from database
+        data.read('checks', id, (err, checkData) => {
+            if (!err && checkData) {
+                // get the token from request header
+                const token = 
+                    typeof(requestProperties.headersObject.token) === 'string' 
+                    ? requestProperties.headersObject.token 
+                    : false;
+
+                // verify token
+                tokenHandler._tokens.verify(
+                    token,
+                    parseJSON(checkData).userPhone,
+                    (tokenIsValid) => {
+                        if (tokenIsValid) {
+                            callback(200, parseJSON(checkData));
+                        } else {
+                            callback(403, {
+                                error: "Unauthorized!"
+                            });
+                        }
+                    }
+                );
+            } else {
+                callback(404, {
+                    error: "Check data not found."
+                });
+            }
+        });
+    } else {
+        callback(400, {
+            error: "You have a problem in your request."
+        });
+    }
+};
 
 // post method handler - check url monitor create
 handler._check.post = (requestProperties, callback) => {
