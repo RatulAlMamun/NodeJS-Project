@@ -16,9 +16,9 @@ environments.staging = {
     secretKey: '38fh3gnn3pdkKdf03',
     maxChecks: 5,
     twilio: {
-        fromPhone: '+17606385792',
-        accountSid: 'AC66781daf9d483fcbe6397517844c253b',
-        authToken: '15c6d26dd421ab50d7f9845e8873ed1b'
+        fromPhone: '',
+        accountSid: '',
+        authToken: ''
     }
 };
 
@@ -29,9 +29,9 @@ environments.production = {
     secretKey: '9j3jv0jdflKDJf0wkjf',
     maxChecks: 5,
     twilio: {
-        fromPhone: '+17606385792',
-        accountSid: 'AC66781daf9d483fcbe6397517844c253b',
-        authToken: '15c6d26dd421ab50d7f9845e8873ed1b'
+        fromPhone: '',
+        accountSid: '',
+        authToken: ''
     }
 };
 
