@@ -14,7 +14,12 @@ environments.staging = {
     port: 3000,
     envName: 'staging',
     secretKey: '38fh3gnn3pdkKdf03',
-    maxChecks: 5
+    maxChecks: 5,
+    twilio: {
+        fromPhone: '+17606385792',
+        accountSid: 'AC66781daf9d483fcbe6397517844c253b',
+        authToken: '15c6d26dd421ab50d7f9845e8873ed1b'
+    }
 };
 
 // production environment
@@ -22,7 +27,12 @@ environments.production = {
     port: 5000,
     envName: 'production',
     secretKey: '9j3jv0jdflKDJf0wkjf',
-    maxChecks: 5
+    maxChecks: 5,
+    twilio: {
+        fromPhone: '+17606385792',
+        accountSid: 'AC66781daf9d483fcbe6397517844c253b',
+        authToken: '15c6d26dd421ab50d7f9845e8873ed1b'
+    }
 };
 
 // Choose the current environment based on run command
