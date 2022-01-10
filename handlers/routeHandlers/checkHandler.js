@@ -9,8 +9,8 @@
 // dependencies
 const data = require('../../lib/data');
 const tokenHandler = require('./tokenHandler');
-const { hash, parseJSON, createRandomString } = require('../../helpers/utilities');
 const { maxChecks } = require('../../helpers/environments');
+const { hash, parseJSON, createRandomString } = require('../../helpers/utilities');
 
 // module scaffolding
 const handler = {};
