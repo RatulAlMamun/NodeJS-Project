@@ -23,7 +23,7 @@ Please follow the below instructions to run this project in your machine:
 
 1. Clone this repository
    ```sh
-   git clone https://github.com/learnwithsumit/uptime-monitoring-api-raw-node.git
+   git clone https://github.com/RatulAlMamun/uptime-monitoring-api-raw-nodejs.git
    ```
 2. Go into cloned directory
    ```sh
