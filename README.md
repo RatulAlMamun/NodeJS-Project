@@ -10,6 +10,7 @@
 + [How to run](#how-to-run)
   - [New Users](#new-users-who-never-cloned-this-repository-before)
   - [Old Users](#old-users-who-previously-cloned-the-repository)
++ [Api Details](#api-details)
 + [Contact](#contact)
 
 
@@ -47,6 +48,13 @@ Just pull the updated code and run the app
 git pull
 npm start
 ```
+<!-- API details -->
+
+## Api details
+
+| Method | URL endpoint | Request payload | Response payload | Description |
+| --- | --- | --- | --- | --- |
+| POST | `{{host}}\user` | <pre>`{`<br>&nbsp;&nbsp;`"firstName":  "Ratul",`<br>&nbsp;&nbsp;`"lastName":  "Al Mamun",`<br>&nbsp;&nbsp;`"phone": "01XXXXXXXXX",`<br>&nbsp;&nbsp;`"password": "XXXXX",`<br>&nbsp;&nbsp;`"tossAgreement": true,`<br>`}`</pre> | <pre>`{`<br>&nbsp;&nbsp;`"message": "Users creat successfully"`<br>`}`</pre> | User Registration |
 
 <!-- CONTACT -->
 

@@ -121,7 +121,7 @@ handler._users.post = (requestProperties, callback) => {
                 data.create('users', phone, userObject, (err2) => {
                     if (!err2) {
                         callback(201, {
-                            message: 'Users creat successfully'
+                            message: 'Users create successfully'
                         })
                     } else {
                         callback(500, {
